@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Einfache Notiz-App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    #noteInput {
+      width: 300px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    #addButton {
+      padding: 10px 15px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #addButton:hover {
+      background-color: #45a049;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      width: 320px;
+    }
+
+    li {
+      background-color: white;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .deleteBtn {
+      background-color: #ff4d4d;
+      border: none;
+      color: white;
+      padding: 5px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .deleteBtn:hover {
+      background-color: #e60000;
+    }
+  </style>
+</head>
+<body>
+  <h1>📝 Meine Notizen</h1>
+
+  <input id="noteInput" type="text" placeholder="Neue Notiz eingeben..." />
+  <button id="addButton">Hinzufügen</button>
+
+  <ul id="noteList"></ul>
+
+  <script>
+    const input = document.getElementById('noteInput');
+    const button = document.getElementById('addButton');
+    const list = document.getElementById('noteList');
+
+    // Lade gespeicherte Notizen beim Start
+    let notes = JSON.parse(localStorage.getItem('notes')) || [];
+
+    function renderNotes() {
+      list.innerHTML = '';
+      notes.forEach((note, index) => {
+        const li = document.createElement('li');
+        li.textContent = note;
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '🗑️';
+        delBtn.classList.add('deleteBtn');
+        delBtn.addEventListener('click', () => {
+          notes.splice(index, 1);
+          updateStorage();
+          renderNotes();
+        });
+
+        li.appendChild(delBtn);
+        list.appendChild(li);
+      });
+    }
+
+    function updateStorage() {
+      localStorage.setItem('notes', JSON.stringify(notes));
+    }
+
+    button.addEventListener('click', () => {
+      const text = input.value.trim();
+      if (text !== '') {
+        notes.push(text);
+        updateStorage();
+        renderNotes();
+        input.value = '';
+      }
+    });
+
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') button.click();
+    });
+
+    // Beim Laden sofort anzeigen
+    renderNotes();
+  </script>
+</body>
+</html>
